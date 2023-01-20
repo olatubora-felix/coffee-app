@@ -39,17 +39,22 @@ export default function Home({ data }) {
                         height={400}
                     />
                 </div>
-                <div className={styles.cardLayout}>
-                    {data.map((coffeeStore) => (
-                        <Card
-                            name={coffeeStore.name}
-                            imgUrl={coffeeStore.imgUrl}
-                            href={`/coffee-store/${coffeeStore.id}`}
-                            className={styles.card}
-                            key={coffeeStore.id}
-                        />
-                    ))}
-                </div>
+                {coffeeStores.length > 0 && (
+                    <>
+                        <h2 className={styles.heading2}>Lagos Coffee</h2>
+                        <div className={styles.cardLayout}>
+                            {data.map((coffeeStore) => (
+                                <Card
+                                    name={coffeeStore.name}
+                                    imgUrl={coffeeStore.imgUrl}
+                                    href={`/coffee-store/${coffeeStore.id}`}
+                                    className={styles.card}
+                                    key={coffeeStore.id}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
             </main>
         </div>
     )
