@@ -6,9 +6,12 @@ import { useRouter } from 'next/router'
 import React from 'react'
 import coffeeStores from '../../data/coffee-stores.json'
 import style from '../../styles/coffee-store.module.css'
+import { fetchData } from '../../lib/coffee-store'
 
 const Details = ({ coffeeStore }) => {
     const router = useRouter()
+
+    console.log(coffeeStore)
 
     const handleUpVoteButton = () => {
         console.log('object')
@@ -16,7 +19,7 @@ const Details = ({ coffeeStore }) => {
     if (router.isFallback) {
         return <div>Loading...</div>
     }
-    const { address, name, neighbourhood, imgUrl } = coffeeStore
+    const { location, name, imgUrl } = coffeeStore
     return (
         <div className={style.layout}>
             <Head>
@@ -31,7 +34,10 @@ const Details = ({ coffeeStore }) => {
                         <h1 className={style.name}>{name}</h1>
                     </div>
                     <Image
-                        src={imgUrl}
+                        src={
+                            imgUrl ||
+                            'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
+                        }
                         alt={name}
                         width={700}
                         height={400}
@@ -42,20 +48,26 @@ const Details = ({ coffeeStore }) => {
                     <div className={style.iconWrapper}>
                         <Image
                             src="/assets/icons/places.svg"
-                            alt={address}
+                            alt={location.formatted_address}
                             width="24"
                             height="24"
                         />
-                        <p className={style.text}>{address}</p>
+                        <p className={style.text}>
+                            {location.formatted_address
+                                ? location.formatted_address
+                                : 'No Address'}
+                        </p>
                     </div>
                     <div className={style.iconWrapper}>
                         <Image
                             src="/assets/icons/nearMe.svg"
-                            alt={neighbourhood}
+                            alt={location.region}
                             width="24"
                             height="24"
                         />
-                        <p className={style.text}>{neighbourhood}</p>
+                        <p className={style.text}>
+                            {location.region ? location.region : 'No Region'}
+                        </p>
                     </div>
                     <div className={style.iconWrapper}>
                         <Image
@@ -79,17 +91,19 @@ const Details = ({ coffeeStore }) => {
 }
 
 export async function getStaticProps({ params }) {
+    const coffeeStores = await fetchData()
     return {
         props: {
             coffeeStore: coffeeStores.find((coffeeStore) => {
-                return coffeeStore.id === Number(params.id)
+                return coffeeStore.fsq_id.toString() === params.id
             }),
         }, // will be passed to the page component as props
     }
 }
-export const getStaticPaths = () => {
+export const getStaticPaths = async () => {
+    const coffeeStores = await fetchData()
     const paths = coffeeStores.map((coffeeStore) => {
-        return { params: { id: String(coffeeStore.id) } }
+        return { params: { id: String(coffeeStore.fsq_id) } }
     })
     return {
         paths,

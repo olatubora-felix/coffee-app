@@ -5,10 +5,9 @@ import styles from '../styles/Home.module.css'
 import Banner from '../components/Banner'
 import hero_image from '../public/assets/hero-image.png'
 import Card from '../components/card/Card'
+import { fetchData } from '../lib/coffee-store'
 
-import coffeeStores from '../data/coffee-stores.json'
-
-export default function Home({ data }) {
+export default function Home({ coffeeStores }) {
     const handleOnClickButton = () => {
         console.log('view coffee location')
     }
@@ -31,25 +30,28 @@ export default function Home({ data }) {
                     buttonText={'View stores nearby'}
                     handleOnClickButton={handleOnClickButton}
                 />
-                <div className={styles.heroImage}>
+                {/* <div className={styles.heroImage}>
                     <Image
                         src={hero_image}
                         alt="hero"
                         width={700}
                         height={400}
                     />
-                </div>
+                </div> */}
                 {coffeeStores.length > 0 && (
                     <>
                         <h2 className={styles.heading2}>Lagos Coffee</h2>
                         <div className={styles.cardLayout}>
-                            {data.map((coffeeStore) => (
+                            {coffeeStores.map((coffeeStore) => (
                                 <Card
                                     name={coffeeStore.name}
-                                    imgUrl={coffeeStore.imgUrl}
-                                    href={`/coffee-store/${coffeeStore.id}`}
+                                    imgUrl={
+                                        coffeeStore.imgUrl ||
+                                        'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
+                                    }
+                                    href={`/coffee-store/${coffeeStore.fsq_id}`}
                                     className={styles.card}
-                                    key={coffeeStore.id}
+                                    key={coffeeStore.fsq_id}
                                 />
                             ))}
                         </div>
@@ -61,7 +63,8 @@ export default function Home({ data }) {
 }
 
 export async function getStaticProps(context) {
+    const coffeeStores = await fetchData()
     return {
-        props: { data: coffeeStores }, // will be passed to the page component as props
+        props: { coffeeStores }, // will be passed to the page component as props
     }
 }
