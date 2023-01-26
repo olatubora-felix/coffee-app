@@ -11,15 +11,13 @@ import { fetchData } from '../../lib/coffee-store'
 const Details = ({ coffeeStore }) => {
     const router = useRouter()
 
-    console.log(coffeeStore)
-
     const handleUpVoteButton = () => {
         console.log('object')
     }
     if (router.isFallback) {
         return <div>Loading...</div>
     }
-    const { location, name, imgUrl } = coffeeStore
+    const { address, region, name, imgUrl } = coffeeStore
     return (
         <div className={style.layout}>
             <Head>
@@ -28,7 +26,7 @@ const Details = ({ coffeeStore }) => {
             <div className={style.container}>
                 <div className={style.col1}>
                     <div className={style.backToHomeLink}>
-                        <Link href={'/'}>Back Home</Link>
+                        <Link href={'/'}>← Back Home</Link>
                     </div>
                     <div className={style.nameWrapper}>
                         <h1 className={style.name}>{name}</h1>
@@ -45,30 +43,28 @@ const Details = ({ coffeeStore }) => {
                     />
                 </div>
                 <div className={classNames('glass', style.col2)}>
-                    <div className={style.iconWrapper}>
-                        <Image
-                            src="/assets/icons/places.svg"
-                            alt={location.formatted_address}
-                            width="24"
-                            height="24"
-                        />
-                        <p className={style.text}>
-                            {location.formatted_address
-                                ? location.formatted_address
-                                : 'No Address'}
-                        </p>
-                    </div>
-                    <div className={style.iconWrapper}>
-                        <Image
-                            src="/assets/icons/nearMe.svg"
-                            alt={location.region}
-                            width="24"
-                            height="24"
-                        />
-                        <p className={style.text}>
-                            {location.region ? location.region : 'No Region'}
-                        </p>
-                    </div>
+                    {address && (
+                        <div className={style.iconWrapper}>
+                            <Image
+                                src="/assets/icons/places.svg"
+                                alt={address ? address : 'address'}
+                                width="24"
+                                height="24"
+                            />
+                            <p className={style.text}>{address}</p>
+                        </div>
+                    )}
+                    {region && (
+                        <div className={style.iconWrapper}>
+                            <Image
+                                src="/assets/icons/nearMe.svg"
+                                alt="region"
+                                width="24"
+                                height="24"
+                            />
+                            <p className={style.text}>{region}</p>
+                        </div>
+                    )}
                     <div className={style.iconWrapper}>
                         <Image
                             src="/assets/icons/star.svg"
@@ -92,18 +88,19 @@ const Details = ({ coffeeStore }) => {
 
 export async function getStaticProps({ params }) {
     const coffeeStores = await fetchData()
+    const findCoffeeStoreByid = coffeeStores.find((coffeeStore) => {
+        return coffeeStore.id.toString() === params.id
+    })
     return {
         props: {
-            coffeeStore: coffeeStores.find((coffeeStore) => {
-                return coffeeStore.fsq_id.toString() === params.id
-            }),
+            coffeeStore: findCoffeeStoreByid ? findCoffeeStoreByid : {},
         }, // will be passed to the page component as props
     }
 }
 export const getStaticPaths = async () => {
     const coffeeStores = await fetchData()
     const paths = coffeeStores.map((coffeeStore) => {
-        return { params: { id: String(coffeeStore.fsq_id) } }
+        return { params: { id: String(coffeeStore.id) } }
     })
     return {
         paths,

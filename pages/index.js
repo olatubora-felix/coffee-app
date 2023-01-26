@@ -6,11 +6,41 @@ import Banner from '../components/Banner'
 import hero_image from '../public/assets/hero-image.png'
 import Card from '../components/card/Card'
 import { fetchData } from '../lib/coffee-store'
+import useTrackLocation from '../hooks/use-track-location'
+import { useEffect, useState } from 'react'
 
 export default function Home({ coffeeStores }) {
+    const {
+        handleTrackLocation,
+        latLong,
+        locationErrorMsg,
+        isFindingLocation,
+    } = useTrackLocation()
+    const [coffees, setCoffees] = useState('')
+    const [coffeeStoreError, setCoffeeStoreError] = useState(null)
+
+    useEffect(() => {
+        const setCoffeeStoresByLocation = async () => {
+            if (latLong) {
+                try {
+                    const fetchedCoffeeStores = await fetchData(latLong, 30)
+                    console.log({ fetchedCoffeeStores })
+                    setCoffees(fetchedCoffeeStores)
+                } catch (error) {
+                    console.log(error)
+                    setCoffeeStoreError(error.message)
+                }
+            }
+        }
+
+        setCoffeeStoresByLocation()
+    }, [latLong])
+
     const handleOnClickButton = () => {
         console.log('view coffee location')
+        handleTrackLocation()
     }
+
     return (
         <div className={styles.container}>
             <Head>
@@ -27,19 +57,40 @@ export default function Home({ coffeeStores }) {
             </Head>
             <main className={styles.main}>
                 <Banner
-                    buttonText={'View stores nearby'}
+                    buttonText={
+                        isFindingLocation ? 'Locating...' : 'View stores nearby'
+                    }
                     handleOnClickButton={handleOnClickButton}
                 />
-                {/* <div className={styles.heroImage}>
-                    <Image
-                        src={hero_image}
-                        alt="hero"
-                        width={700}
-                        height={400}
-                    />
-                </div> */}
+                {locationErrorMsg && (
+                    <h6>Something went wrong: {locationErrorMsg}</h6>
+                )}
+                {coffeeStoreError && (
+                    <h6>Something went wrong: {coffeeStoreError}</h6>
+                )}
+                {coffees.length > 0 && (
+                    <div className={styles.sectionWrapper}>
+                        <h2 className={styles.heading2}>
+                            Coffee Store near me
+                        </h2>
+                        <div className={styles.cardLayout}>
+                            {coffees.map((coffeeStore) => (
+                                <Card
+                                    name={coffeeStore.name}
+                                    imgUrl={
+                                        coffeeStore.imgUrl ||
+                                        'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
+                                    }
+                                    href={`/coffee-store/${coffeeStore.id}`}
+                                    className={styles.card}
+                                    key={coffeeStore.id}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
                 {coffeeStores.length > 0 && (
-                    <>
+                    <div className={styles.sectionWrapper}>
                         <h2 className={styles.heading2}>Lagos Coffee</h2>
                         <div className={styles.cardLayout}>
                             {coffeeStores.map((coffeeStore) => (
@@ -49,13 +100,13 @@ export default function Home({ coffeeStores }) {
                                         coffeeStore.imgUrl ||
                                         'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
                                     }
-                                    href={`/coffee-store/${coffeeStore.fsq_id}`}
+                                    href={`/coffee-store/${coffeeStore.id}`}
                                     className={styles.card}
-                                    key={coffeeStore.fsq_id}
+                                    key={coffeeStore.id}
                                 />
                             ))}
                         </div>
-                    </>
+                    </div>
                 )}
             </main>
         </div>

@@ -1,21 +1,30 @@
 import { fetchApi } from './fetchapi'
 import { unsplashapi } from './unsplashapi'
 
-export const fetchData = async () => {
-    const unsplashResults = await unsplashapi()
-    console.log(unsplashResults)
+export const fetchData = async (
+    latLong = '6.349175869222041,3.4576552235417135',
+    limit = 6
+) => {
     const options = {
         method: 'GET',
         headers: {
             accept: 'application/json',
-            Authorization: process.env.FOURSQUARE_API_KEY,
+            Authorization: process.env.NEXT_PUBLIC_FOURSQUARE_API_KEY,
         },
     }
 
-    const response = await fetch(
-        fetchApi('coffee', '6.349175869222041%2C3.4576552235417135', 6),
-        options
-    )
+    const response = await fetch(fetchApi('coffee', latLong, limit), options)
     const data = await response.json()
-    return data.results
+    const unsplashResults = await unsplashapi()
+    return data?.results.map((result, i) => {
+        const address = result.location.formatted_address
+        const region = result.location.region
+        return {
+            id: result.fsq_id,
+            name: result.name,
+            address: address ? address : null,
+            region: region ? region : null,
+            imgUrl: unsplashResults.length > 0 ? unsplashResults[i] : null,
+        }
+    })
 }
