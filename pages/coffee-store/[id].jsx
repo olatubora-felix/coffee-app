@@ -3,25 +3,49 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import coffeeStores from '../../data/coffee-stores.json'
 import style from '../../styles/coffee-store.module.css'
 import { fetchData } from '../../lib/coffee-store'
+import { StoreContext } from '../../context/store'
+import { isEmpty } from '../../utils/index'
 
-const Details = ({ coffeeStore }) => {
+const Details = (initialProps) => {
     const router = useRouter()
 
+    const { state } = useContext(StoreContext)
+    const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore)
+    const { id } = router.query
     const handleUpVoteButton = () => {
         console.log('object')
     }
+
+    const { coffeeStores } = state
+
+    useEffect(() => {
+        const getCoffeeStore = () => {
+            if (isEmpty(initialProps.coffeeStore)) {
+                if (coffeeStores.length > 0) {
+                    const findCoffeeStoreByid = coffeeStores.find(
+                        (coffeeStore) => {
+                            return coffeeStore.id.toString() === id
+                        }
+                    )
+                    setCoffeeStore(findCoffeeStoreByid)
+                }
+            }
+        }
+        getCoffeeStore()
+    }, [id])
+
     if (router.isFallback) {
         return <div>Loading...</div>
     }
-    const { address, region, name, imgUrl } = coffeeStore
+
     return (
         <div className={style.layout}>
             <Head>
-                <title>{name}</title>
+                <title>{coffeeStore?.name}</title>
             </Head>
             <div className={style.container}>
                 <div className={style.col1}>
@@ -29,32 +53,40 @@ const Details = ({ coffeeStore }) => {
                         <Link href={'/'}>← Back Home</Link>
                     </div>
                     <div className={style.nameWrapper}>
-                        <h1 className={style.name}>{name}</h1>
+                        <h1 className={style.name}>{coffeeStore?.name}</h1>
                     </div>
                     <Image
                         src={
-                            imgUrl ||
+                            coffeeStore?.imgUrl ||
                             'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
                         }
-                        alt={name}
+                        alt={
+                            coffeeStore?.name
+                                ? coffeeStore?.name
+                                : 'coffee photo'
+                        }
                         width={700}
                         height={400}
                         className={style.storeImg}
                     />
                 </div>
                 <div className={classNames('glass', style.col2)}>
-                    {address && (
+                    {coffeeStore?.address && (
                         <div className={style.iconWrapper}>
                             <Image
                                 src="/assets/icons/places.svg"
-                                alt={address ? address : 'address'}
+                                alt={
+                                    coffeeStore?.address
+                                        ? coffeeStore?.address
+                                        : 'address'
+                                }
                                 width="24"
                                 height="24"
                             />
-                            <p className={style.text}>{address}</p>
+                            <p className={style.text}>{coffeeStore?.address}</p>
                         </div>
                     )}
-                    {region && (
+                    {coffeeStore?.region && (
                         <div className={style.iconWrapper}>
                             <Image
                                 src="/assets/icons/nearMe.svg"
@@ -62,7 +94,7 @@ const Details = ({ coffeeStore }) => {
                                 width="24"
                                 height="24"
                             />
-                            <p className={style.text}>{region}</p>
+                            <p className={style.text}>{coffeeStore?.region}</p>
                         </div>
                     )}
                     <div className={style.iconWrapper}>

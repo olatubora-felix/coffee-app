@@ -1,31 +1,32 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
 import styles from '../styles/Home.module.css'
 import Banner from '../components/Banner'
-import hero_image from '../public/assets/hero-image.png'
-import Card from '../components/card/Card'
 import { fetchData } from '../lib/coffee-store'
 import useTrackLocation from '../hooks/use-track-location'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
+import { ACTION_TYPES } from '../context/type'
+import { StoreContext } from '../context/store'
+import CoffeeStoresItem from '../components/coffeeStores/CoffeeStoresItem'
 
 export default function Home({ coffeeStores }) {
-    const {
-        handleTrackLocation,
-        latLong,
-        locationErrorMsg,
-        isFindingLocation,
-    } = useTrackLocation()
-    const [coffees, setCoffees] = useState('')
+    const { handleTrackLocation, locationErrorMsg, isFindingLocation } =
+        useTrackLocation()
+
     const [coffeeStoreError, setCoffeeStoreError] = useState(null)
+    const { dispatch, state } = useContext(StoreContext)
 
     useEffect(() => {
         const setCoffeeStoresByLocation = async () => {
-            if (latLong) {
+            if (state.latLong) {
                 try {
-                    const fetchedCoffeeStores = await fetchData(latLong, 30)
-                    console.log({ fetchedCoffeeStores })
-                    setCoffees(fetchedCoffeeStores)
+                    const fetchedCoffeeStores = await fetchData(
+                        state.latLong,
+                        30
+                    )
+                    dispatch({
+                        type: ACTION_TYPES.SET_COFFEE_STORES,
+                        payload: { coffeeStores: fetchedCoffeeStores },
+                    })
                 } catch (error) {
                     console.log(error)
                     setCoffeeStoreError(error.message)
@@ -34,10 +35,9 @@ export default function Home({ coffeeStores }) {
         }
 
         setCoffeeStoresByLocation()
-    }, [latLong])
+    }, [state.latLong, dispatch])
 
     const handleOnClickButton = () => {
-        console.log('view coffee location')
         handleTrackLocation()
     }
 
@@ -68,46 +68,14 @@ export default function Home({ coffeeStores }) {
                 {coffeeStoreError && (
                     <h6>Something went wrong: {coffeeStoreError}</h6>
                 )}
-                {coffees.length > 0 && (
-                    <div className={styles.sectionWrapper}>
-                        <h2 className={styles.heading2}>
-                            Coffee Store near me
-                        </h2>
-                        <div className={styles.cardLayout}>
-                            {coffees.map((coffeeStore) => (
-                                <Card
-                                    name={coffeeStore.name}
-                                    imgUrl={
-                                        coffeeStore.imgUrl ||
-                                        'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
-                                    }
-                                    href={`/coffee-store/${coffeeStore.id}`}
-                                    className={styles.card}
-                                    key={coffeeStore.id}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )}
-                {coffeeStores.length > 0 && (
-                    <div className={styles.sectionWrapper}>
-                        <h2 className={styles.heading2}>Lagos Coffee</h2>
-                        <div className={styles.cardLayout}>
-                            {coffeeStores.map((coffeeStore) => (
-                                <Card
-                                    name={coffeeStore.name}
-                                    imgUrl={
-                                        coffeeStore.imgUrl ||
-                                        'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
-                                    }
-                                    href={`/coffee-store/${coffeeStore.id}`}
-                                    className={styles.card}
-                                    key={coffeeStore.id}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <CoffeeStoresItem
+                    coffeeStores={state.coffeeStores}
+                    heading="Coffee Store near me"
+                />
+                <CoffeeStoresItem
+                    coffeeStores={coffeeStores}
+                    heading="Lagos Coffee Store"
+                />
             </main>
         </div>
     )
