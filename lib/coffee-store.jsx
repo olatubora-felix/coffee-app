@@ -1,9 +1,13 @@
 import { fetchApi } from './fetchapi'
+
+import { useContext } from 'react'
+import { StoreContext } from '../context/store'
 import { unsplashapi } from './unsplashapi'
 
 export const fetchData = async (
     latLong = '6.349175869222041,3.4576552235417135',
-    limit = 6
+    limit = 6,
+    search = 'coffee'
 ) => {
     const options = {
         method: 'GET',
@@ -13,9 +17,9 @@ export const fetchData = async (
         },
     }
 
-    const response = await fetch(fetchApi('coffee', latLong, limit), options)
+    const response = await fetch(fetchApi(search, latLong, limit), options)
     const data = await response.json()
-    const unsplashResults = await unsplashapi()
+    const unsplashResults = await unsplashapi(search)
     return data?.results.map((result, i) => {
         const address = result.location.formatted_address
         const region = result.location.region

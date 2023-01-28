@@ -31,7 +31,19 @@
 }
 
 .buttonWrapper {
-    margin-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.buttonWrapper .input {
+    flex: 1;
+    height: 40px;
+    border-radius: 5px;
+    border: 0px;
+    padding: 0px 10px;
+    outline: none;
+    padding: 10px;
+    margin-top: 10px;
 }
 
 .button {
@@ -40,13 +52,9 @@
     color: white;
     outline: 0;
     border: 0px;
-
-    padding-top: 1rem /* 16px */;
-    padding-bottom: 1rem /* 16px */;
-    font-size: 1.125rem /* 18px */;
-    line-height: 1.75rem /* 28px */;
-    padding-left: 2.5rem /* 40px */;
-    padding-right: 2.5rem /* 40px */;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding: 10px;
 }
 
 .button:hover {
@@ -76,7 +84,6 @@
     }
 
     .buttonWrapper {
-        display: flex;
         margin-top: 2rem;
     }
 }
@@ -93,13 +100,12 @@
     }
 
     .button {
-        padding-top: 1rem /* 16px */;
-        padding-bottom: 1rem /* 16px */;
-        font-size: 1.125rem /* 18px */;
-        line-height: 1.75rem /* 28px */;
-        padding-left: 2.5rem /* 40px */;
-        padding-right: 2.5rem /* 40px */;
-        border-radius: 5px;
+        font-size: 1rem /* 18px */;
+        line-height: 1rem /* 28px */;
+        margin-left: 6px;
+    }
+    .buttonWrapper {
+        flex-direction: row;
     }
 }
 

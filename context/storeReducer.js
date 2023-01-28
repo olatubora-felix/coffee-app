@@ -16,6 +16,13 @@ export const storeReducer = (state, action) => {
             }
         }
 
+        case ACTION_TYPES.SET_SEARCH_PLACES: {
+            return {
+                ...state,
+                search: action.payload.search,
+            }
+        }
+
         default:
             throw new Error(`Unhandle action type: ${action.type}`)
     }

@@ -5,6 +5,7 @@ export const StoreContext = createContext()
 const initialState = {
     latLong: '',
     coffeeStores: [],
+    search: '',
 }
 export const StoreContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(storeReducer, initialState)
