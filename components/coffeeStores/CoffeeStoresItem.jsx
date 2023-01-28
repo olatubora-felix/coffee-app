@@ -6,7 +6,7 @@ import { Fade } from 'react-awesome-reveal'
 const CoffeeStoresItem = ({ coffeeStores, heading }) => {
     return (
         <Fragment>
-            {coffeeStores.length > 0 && (
+            {coffeeStores.length > 0 ? (
                 <div className={styles.sectionWrapper}>
                     <h2 className={styles.heading2}>{heading}</h2>
                     <div className={styles.cardLayout}>
@@ -24,6 +24,8 @@ const CoffeeStoresItem = ({ coffeeStores, heading }) => {
                         ))}
                     </div>
                 </div>
+            ) : (
+                <h4>Search for places or stores around you</h4>
             )}
         </Fragment>
     )
