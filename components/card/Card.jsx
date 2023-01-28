@@ -2,7 +2,7 @@ import cls from 'classnames'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import styles from './card.module.css'
+import styles from './Card.module.css'
 
 const Card = (props) => {
     return (

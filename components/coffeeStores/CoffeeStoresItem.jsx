@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react'
 import Card from '../card/Card'
 import styles from '../../styles/Home.module.css'
+import { Fade } from 'react-awesome-reveal'
 
 const CoffeeStoresItem = ({ coffeeStores, heading }) => {
     return (

@@ -36,7 +36,7 @@ const Details = (initialProps) => {
             }
         }
         getCoffeeStore()
-    }, [id])
+    }, [id, coffeeStores, initialProps.coffeeStore])
 
     if (router.isFallback) {
         return <div>Loading...</div>

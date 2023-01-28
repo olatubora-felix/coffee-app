@@ -7,6 +7,7 @@ import { useContext, useEffect, useState } from 'react'
 import { ACTION_TYPES } from '../context/type'
 import { StoreContext } from '../context/store'
 import CoffeeStoresItem from '../components/coffeeStores/CoffeeStoresItem'
+import { Fade } from 'react-awesome-reveal'
 
 export default function Home({ coffeeStores }) {
     const { handleTrackLocation, locationErrorMsg, isFindingLocation } =
@@ -68,10 +69,12 @@ export default function Home({ coffeeStores }) {
                 {coffeeStoreError && (
                     <h6>Something went wrong: {coffeeStoreError}</h6>
                 )}
-                <CoffeeStoresItem
-                    coffeeStores={state.coffeeStores}
-                    heading="Coffee Store near me"
-                />
+                <Fade direction="bottom-left">
+                    <CoffeeStoresItem
+                        coffeeStores={state.coffeeStores}
+                        heading="Coffee Store near me"
+                    />
+                </Fade>
                 <CoffeeStoresItem
                     coffeeStores={coffeeStores}
                     heading="Lagos Coffee Store"
