@@ -69,12 +69,12 @@ export default function Home({ coffeeStores }) {
                 {coffeeStoreError && (
                     <h6>Something went wrong: {coffeeStoreError}</h6>
                 )}
-                <Fade direction="bottom-left">
-                    <CoffeeStoresItem
-                        coffeeStores={state.coffeeStores}
-                        heading="Coffee Store near me"
-                    />
-                </Fade>
+
+                <CoffeeStoresItem
+                    coffeeStores={state.coffeeStores}
+                    heading="Coffee Store near me"
+                />
+
                 <CoffeeStoresItem
                     coffeeStores={coffeeStores}
                     heading="Lagos Coffee Store"
